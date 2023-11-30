@@ -1,4 +1,9 @@
 import { useForm } from "react-hook-form";
+import { Link } from "react-router-dom";
+
+import { dataFromServer } from "../api/axios";
+import { LOGIN_BY_NAVER } from "../constants/ApiUrl";
+import { FIND_ACCOUNT, LOGIN, REGISTER } from "../constants/UrlPath";
 
 function Login() {
     const { 
@@ -11,12 +16,16 @@ function Login() {
         delayError: 500,
     })
 
-    const printFormData = (data) => console.log(data);
+    const submitLogin = () => {
+        // 로그인 회원을 세션에 저장하는 방식은 서버에 위임.
+        dataFromServer(LOGIN);
+    }
 
     return(
         <div>
+
             <div>
-                <form method="POST" onSubmit={handleSubmit(printFormData)}>
+                <form onSubmit={handleSubmit(submitLogin)}>
                     <label for="login__id">ID</label>
                     <input id="login__id" 
                         {...register("id", {
@@ -43,6 +52,16 @@ function Login() {
                     />
                     <p>{errors.password?.message}</p>
                 </form>
+                <div>
+                    <input value="naver logo" id="login__naver" type="button" onClick={()=>useFetch(process.env.REACT_APP_SERVER_URL + LOGIN_BY_NAVER)} />
+                    <input id="kakao logo" type="button" onClick={()=>useFetch(process.env.REACT_APP_SERVER_URL + LOGIN_BY_KAKAO)} />
+                </div>
+                <div>
+                    <ul>
+                        <li><Link to={REGISTER}>Sign in</Link></li>
+                        <li><Link to={FIND_ACCOUNT}>Find ID/PASSWORD</Link></li>
+                    </ul>
+                </div>
             </div>
         </div>
     );

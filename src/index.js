@@ -7,16 +7,52 @@ import reportWebVitals from './reportWebVitals';
 import Main from './common/Main';
 import Login from './router/Login';
 import NotFound from './error_page/404';
+import Home from './router/Home';
+import FindAccount from './router/FindAccount';
+import FindPassword from './router/FindPassword';
 
 const router = createBrowserRouter([
   {
-    path: "/login",
-    element: <Login />,
+    path: "/",
+    element: <Home />,
     children: [
+      {
+        path: "login",
+        element: <Login />,
+        children: [
 
+        ],
+      },
+      {
+        path: "account",
+        children: [
+          {
+            path: "find",
+            element: <FindAccount />
+          },
+          {
+            path: "result",
+            children: [
+              {
+                path: "id",
+                element: <FindId />
+              },
+              {
+                path: "password",
+                element: <FindPassword />
+              }
+            ]
+          },
+          {
+            path: "create",
+            element: <Register />
+          }
+        ]
+      }
     ],
     errorElement: <NotFound />,
   },
+
 
 ])
 
