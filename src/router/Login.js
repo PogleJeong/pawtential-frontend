@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 
 import { LOGIN_BY_NAVER } from "../constants/ApiUrl";
-import { FIND_ACCOUNT, LOGIN, REGISTER } from "../constants/UrlPath";
+import { FIND_ACCOUNT, HOME, LOGIN, REGISTER } from "../constants/UrlPath";
 import axios from "axios";
 
 function Login() {
@@ -26,14 +26,15 @@ function Login() {
                 "Content-Type": "application/json"
             },
             baseURL: process.env.SERVER_URL,
-        })?.data;
-        
-        if (!data) {
-            alert("로그인에 실패하였습니다. 아이디/비밀번호를 확인해주세요.");
-        } else {
-            // 네비게이션
-            navigate("/home")
-        }
+        }).then(response => {
+            if (response.data) {
+                alert("로그인에 실패하였습니다. 아이디/비밀번호를 확인해주세요.");
+            } else {
+                // 페이지 이동
+                navigate(HOME);
+            }
+        })
+    
     }
 
     return(

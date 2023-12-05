@@ -1,7 +1,8 @@
-import { useForm } from "react-hook-form";
-import { CHECK_EMAIL, CHECK_ID } from "../constants/ApiUrl";
-import { dataFromServer } from "../api/axios";
 import axios from "axios";
+import { useForm } from "react-hook-form";
+
+import { CHECK_EMAIL, CHECK_ID } from "../constants/ApiUrl";
+import { REGISTER } from "../constants/UrlPath";
 
 function Register() {
     const [ isCheckId, setIsCheckId ] = useState(false);
@@ -9,8 +10,6 @@ function Register() {
     const { 
         register,
         handleSubmit,
-        trigger,
-        setValue,
         formState: { errors },
         getValues, // 현재 register 에 등록된 input value 값 가져오기
     } = useForm();
@@ -37,9 +36,25 @@ function Register() {
         }
     }
 
+    const submitForm = async(formData) => {
+        console.log(formData);
+        await axios.post(REGISTER, formData, {
+            headers: {
+                "Content-Type": "application/json"
+            },
+            baseURL: process.env.SERVER_URL
+        }).then(response => {
+            if (response.data) {
+                navigator(PET_ADD);
+            } else {
+                alert("회원가입에 실패하였습니다.");
+            }
+        })
+    }
+
     return(
         <div>
-            <form>
+            <form onSubmit={handleSubmit(submitForm)}>
                 <h2>REGISTER LIST</h2>
                 <ul>
                     <li>
@@ -84,17 +99,16 @@ function Register() {
                             {...register("passwordDuplication", {
                                 required: "비밀번호를 확인해주세요.",
                                 validate: {
-                                    isMatchPassword: (value) => {
-                                        return value == getValues("password") ? true : "비밀번호를 다시 확인해주세요."
-                                    }
+                                    isMatchPassword: (value) => value == getValues("password") || "비밀번호를 다시 확인해주세요."
                                 }
                             })}
                         />
-                        <small>{errors}</small>
+                        <small>{errors?.passwordDuplication?.message}</small>
                     </li>
                     <li>
                         <label htmlFor="regi__email">EMAIL</label>
                         <input id="regi__email"
+                            type="email"
                             {...register("email", {
                                 required: "이메일을 입력해주세요.",
                                 pattern: {
