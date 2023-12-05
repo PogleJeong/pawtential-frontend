@@ -1,7 +1,7 @@
 function FindId() {
     return(
         <div>
-            <h2>result = {}</h2>
+            <h2>result</h2>
         </div>
     )
 }

@@ -1,10 +1,11 @@
-import axios from "axios";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import axios from "axios";
 
 import { CHECK_EMAIL, CHECK_ID } from "../constants/ApiUrl";
-import { REGISTER } from "../constants/UrlPath";
+import { PET_ADD, REGISTER } from "../constants/UrlPath";
 
-function Register() {
+function RegisterUser() {
     const [ isCheckId, setIsCheckId ] = useState(false);
     const [ isCheckEmail, setIsCheckEmail ] = useState(false);
     const { 
@@ -227,4 +228,4 @@ function Register() {
     )
 }
 
-export default Register;
+export default RegisterUser;

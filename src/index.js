@@ -10,6 +10,10 @@ import NotFound from './error_page/404';
 import Home from './router/Home';
 import FindAccount from './router/FindAccount';
 import FindPassword from './router/FindPassword';
+import RegisterUser from './router/RegisterUser';
+import ChoiceToRegisterPet from './router/ChoiceToRegisterPet.';
+import RegisterPet from './router/RegisterPet';
+import FindId from './router/FindId';
 
 const router = createBrowserRouter([
   {
@@ -43,9 +47,19 @@ const router = createBrowserRouter([
               }
             ]
           },
+        ]
+      },
+      {
+        path: "register",
+        element: <RegisterUser />,
+        children: [
           {
-            path: "create",
-            element: <Register />
+            path: "choice",
+            element: <ChoiceToRegisterPet />
+          },
+          {
+            path: "pet",
+            element: <RegisterPet />
           }
         ]
       }

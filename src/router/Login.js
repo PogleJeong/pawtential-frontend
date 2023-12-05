@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 
-import { LOGIN_BY_NAVER } from "../constants/ApiUrl";
+import { LOGIN_BY_KAKAO, LOGIN_BY_NAVER } from "../constants/ApiUrl";
 import { FIND_ACCOUNT, HOME, LOGIN, REGISTER } from "../constants/UrlPath";
 import axios from "axios";
 
@@ -37,6 +37,18 @@ function Login() {
     
     }
 
+    const loginByKakao = async() => {
+        await axios.get(LOGIN_BY_KAKAO, {
+            baseURL: process.env.SERVER_URL
+        })
+    }
+
+    const loginByNaver = async() => {
+        await axios.get(LOGIN_BY_NAVER, {
+            baseURL: process.env.SERVER_URL
+        })
+    }
+
     return(
         <div>
             <div>
@@ -66,10 +78,11 @@ function Login() {
                         placeholder="PASSWORD"
                     />
                     <p>{errors.password?.message}</p>
+                    <button>Login</button>
                 </form>
                 <div>
-                    <input value="naver logo" id="login__naver" type="button" onClick={()=>useFetch(process.env.REACT_APP_SERVER_URL + LOGIN_BY_NAVER)} />
-                    <input id="kakao logo" type="button" onClick={()=>useFetch(process.env.REACT_APP_SERVER_URL + LOGIN_BY_KAKAO)} />
+                    <input id="login__naver" type="button" value="naver logo" onClick={loginByNaver} />
+                    <input id="login__kakao" type="button" value="kakao logo" onClick={loginByKakao} />
                 </div>
                 <div>
                     <ul>

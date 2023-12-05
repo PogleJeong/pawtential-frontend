@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { HOME, PET } from "../constants/UrlPath";
 
 /**
  * 반려동물 정보 추가 or 생략
@@ -19,3 +20,5 @@ function ChoiceToRegisterPet() {
         </div>
     )
 }
+
+export default ChoiceToRegisterPet;
