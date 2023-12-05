@@ -1,9 +1,9 @@
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-import { dataFromServer } from "../api/axios";
 import { LOGIN_BY_NAVER } from "../constants/ApiUrl";
 import { FIND_ACCOUNT, LOGIN, REGISTER } from "../constants/UrlPath";
+import axios from "axios";
 
 function Login() {
     const { 
@@ -16,14 +16,28 @@ function Login() {
         delayError: 500,
     })
 
-    const submitLogin = () => {
+    const navigate = useNavigate();
+
+    const submitLogin = async(formData) => {
+        console.log(formData);
         // 로그인 회원을 세션에 저장하는 방식은 서버에 위임.
-        dataFromServer(LOGIN);
+        const { data } = await axios.post(LOGIN, formData, {
+            headers: {
+                "Content-Type": "application/json"
+            },
+            baseURL: process.env.SERVER_URL,
+        })?.data;
+        
+        if (!data) {
+            alert("로그인에 실패하였습니다. 아이디/비밀번호를 확인해주세요.");
+        } else {
+            // 네비게이션
+            navigate("/home")
+        }
     }
 
     return(
         <div>
-
             <div>
                 <form onSubmit={handleSubmit(submitLogin)}>
                     <label for="login__id">ID</label>

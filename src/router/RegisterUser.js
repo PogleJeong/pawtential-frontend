@@ -1,4 +1,7 @@
 import { useForm } from "react-hook-form";
+import { CHECK_EMAIL, CHECK_ID } from "../constants/ApiUrl";
+import { dataFromServer } from "../api/axios";
+import axios from "axios";
 
 function Register() {
     const [ isCheckId, setIsCheckId ] = useState(false);
@@ -12,6 +15,28 @@ function Register() {
         getValues, // 현재 register 에 등록된 input value 값 가져오기
     } = useForm();
 
+    const checkEmail = async(formData) => { // data 는 register 값이 들어감
+        console.log(formData);
+        
+        // 서버쪽 고치기 - 비즈니스로직상 중복아이디나 중복이메일이 있어도 정상이므로 200을 받아야함.
+        const { status } = await axios.get(CHECK_EMAIL);
+        if (status == 204) {
+            setIsCheckId(()=>true);
+        } else {
+            setIsCheckId(()=>false);
+        }
+    }
+
+    const checkId = async(formData) => {
+        console.log(formData);
+        const { status } = await axios.get(CHECK_ID);
+        if (status == 204) {
+            setIsCheckEmail(()=>true);
+        } else {
+            setIsCheckEmail(()=>false);
+        }
+    }
+
     return(
         <div>
             <form>
@@ -22,7 +47,10 @@ function Register() {
                         <input id="regi__id"
                             {...register("id",{
                                 required: "ID 를 입력해주세요",
-                                pattern: /^[a-z0-9_-]{6,20}$/
+                                pattern: /^[a-z0-9_-]{6,20}$/,
+                                validate: {
+                                    check: () => isCheckId || "ID 중복을 확인해주세요"
+                                }
                             })}
                         />
                         <input type="button" onClick={checkId}>중복확인</input>
@@ -72,6 +100,9 @@ function Register() {
                                 pattern: {
                                     value: /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/,
                                     message: "이메일 형식이 맞지 않습니다."
+                                },
+                                validate: {
+                                    check: () => isCheckEmail || "이메일 중복을 확인해주세요."
                                 }
                             })}
                         />
@@ -128,16 +159,27 @@ function Register() {
                         <label htmlFor="regi__birth">BIRTH</label>
                         <input id="regi__birth"
                             {...register("birth", {
-                                required: "생일을 입력해주세요",
+                                required: "생년월일을 입력해주세요",
+                                maxLength: {
+                                    value: 8,
+                                    message: "생년월일은 8글자 이어야합니다.",
+                                },
                                 validate: {
-                                    equalLength: (value) => {
-                                        return String(value).length == 8;
+                                    equalLength: value => value.length == 8 || "생년월일은 8자리입니다.",
+                                    onlyNumber: value => !value.isNaN() || "오직 숫자만 입력해야합니다.",
+                                    isPrevious: (value) => {
+                                        let birthday = new Date();
+                                        birthday.setFullYear(parseInt(value.substring(0, 4)));
+                                        birthday.setMonth(parseInt(value.substring(4, 6)));
+                                        birthday.setDate(parseInt(value.substring(6)));
+
+                                        return Date.now() - birthday.getTime() > 0 || "현재보다 이후의 시간입니다."
                                     }
                                 },
                             
                             })}
                         />
-                        <small>{errors}</small>
+                        <small>{errors?.birth?.message}</small>
                     </li>
                     <li>
                         <label htmlFor="regi__sex">SEX</label>
@@ -145,13 +187,19 @@ function Register() {
                             <li>
                                 <label htmlFor="regi__male">MALE</label>
                                 <input id="regi__male" 
+                                    {...register("sex", {
+                                        required: "성별을 선택해주세요."
+                                    })}
                                     type="radio" 
                                     value="M"
                                 />
                             </li>
                             <li>
                                 <label htmlFor="regi__female">FEMALE</label>
-                                <input id="regi__female" 
+                                <input id="regi__female"
+                                    {...register("sex", {
+                                        required: "성별을 선택해주세요."
+                                    })} 
                                     type="radio" 
                                     value="F"
                                 />
@@ -159,6 +207,7 @@ function Register() {
                         </ul>
                     </li>
                 </ul>
+                <input type="submit" value="Submit" />
             </form>
         </div>
     )
