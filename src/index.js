@@ -4,21 +4,24 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import Main from './common/Main';
+import Main from './common/Root';
 import Login from './router/Login';
 import NotFound from './error_page/404';
-import Home from './router/Home';
 import FindAccount from './router/FindAccount';
 import FindPassword from './router/FindPassword';
 import RegisterUser from './router/RegisterUser';
 import ChoiceToRegisterPet from './router/ChoiceToRegisterPet.';
 import RegisterPet from './router/RegisterPet';
 import FindId from './router/FindId';
+import Root from './common/Root';
 
+/**
+ * router 에서 children 은 parent 컴포넌트 안의 Outlet 에 배치할 컴포넌트를 정의하는 것이다.
+ */
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Home />,
+    element: <Root />,
     children: [
       {
         path: "login",
@@ -52,16 +55,14 @@ const router = createBrowserRouter([
       {
         path: "register",
         element: <RegisterUser />,
-        children: [
-          {
-            path: "choice",
-            element: <ChoiceToRegisterPet />
-          },
-          {
-            path: "pet",
-            element: <RegisterPet />
-          }
-        ]
+      },
+      {
+        path: "register/choice",
+        element: <ChoiceToRegisterPet />
+      }, 
+      {
+        path: "register/pet",
+        element: <RegisterPet />
       }
     ],
     errorElement: <NotFound />,
@@ -69,8 +70,6 @@ const router = createBrowserRouter([
 
 
 ])
-
-
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
