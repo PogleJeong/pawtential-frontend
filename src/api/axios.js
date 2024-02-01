@@ -12,7 +12,7 @@ const Method = {
 export const axiossss = async(url, method, request) => {
 
     // if (method == Method.GET) {
-    //     const { status, data } = await axios.get(process.env.SERVER_URL + url, request);
+    //     const { status, data } = await axios.get(process.env.REACT_SERVER_URL + url, request);
     //     if ( 200 <= status < 300) {
     //         return data;
     //     } 
@@ -28,7 +28,7 @@ export const axiossss = async(url, method, request) => {
     // }
 
     // if (method == Method.POST) {
-    //     const { status, data } = await axios.post(process.env.SERVER_URL + url, request);
+    //     const { status, data } = await axios.post(process.env.REACT_SERVER_URL + url, request);
     //     if ( 200 <= status < 300) {
     //         return data;
     //     } 
