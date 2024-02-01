@@ -1,21 +1,36 @@
 import axios from "axios";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
-import { CHECK_EMAIL, CHECK_ID } from "../constants/ApiUrl";
-import { PET_ADD, REGISTER } from "../constants/UrlPath";
+import { CHECK_EMAIL, CHECK_ID } from "../../constants/ApiUrl";
+import { PET_ADD, REGISTER } from "../../constants/UrlPath";
 
 function RegisterUser() {
+    const [ imageFakeUrl, setImageFakeUrl ] = useState("");
+    const imageRef = useRef();
     const [ isCheckId, setIsCheckId ] = useState(true);
     const [ isCheckEmail, setIsCheckEmail ] = useState(true);
+    
     const {
         register,
         handleSubmit,
         formState: { errors },
         getValues, // 현재 register 에 등록된 input value 값 가져오기
     } = useForm({
-        mode: "onChange"
+        mode: "onSubmit"
     });
+
+    const regiUserImage = (event) => {
+        let fileUrl = event.target.files[0];
+
+        if (fileUrl) {
+            const imageURL = URL.createObjectURL(fileUrl);
+            imageRef.current.src = imageURL;
+            setImageFakeUrl(()=>imageURL);
+        }
+       
+        
+    }
 
     const checkEmail = async(formData) => { // data 는 register 값이 들어감
         console.log(formData);
@@ -45,7 +60,7 @@ function RegisterUser() {
         //     headers: {
         //         "Content-Type": "application/json"
         //     },
-        //     baseURL: process.env.SERVER_URL
+        //     baseURL: process.env.REACT_SERVER_URL
         // }).then(response => {
         //     if (response.data) {
         //         navigator(PET_ADD);
@@ -60,6 +75,15 @@ function RegisterUser() {
             <form onSubmit={handleSubmit(submitForm)}>
                 <h2>REGISTER LIST</h2>
                 <ul>
+                    <li>
+                        <label htmlFor="regi__profile">Profile 설정하기</label>
+                        <img ref={imageRef} />
+                        <input type="file" id="regi__profile" 
+                            {...register("profile")}
+                            onChange={regiUserImage} 
+                        />
+                        {getValues("profile") && <span>설정하지 않으면 기본이미지가 설정됩니다.</span>}
+                    </li>
                     <li>
                         <label htmlFor="regi__id">ID</label>
                         <input id="regi__id"
@@ -92,6 +116,7 @@ function RegisterUser() {
                                     message: "8자 이상, 24자 이하의 특수문자를 포함한 영문, 숫자 혼용비밀번호를 입력해주세요"
                                 }
                             })}
+                            type="password"
                         />
                         {errors?.password && <small>{errors?.password.message}</small>}
                     </li>
@@ -105,6 +130,7 @@ function RegisterUser() {
                                     isMatchPassword: (value) => value === getValues("password") || "비밀번호가 일치하지 않습니다. 다시 확인해주세요."
                                 }
                             })}
+                            type="password"
                         />
                         {errors?.passwordDuplication && <small>{errors?.passwordDuplication.message}</small>}
                     </li>

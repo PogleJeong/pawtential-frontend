@@ -3,8 +3,8 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
-import { FIND_ACCOUNT_ID_RESULT, FIND_ACCOUNT_PASSWORD_RESULT, LOGIN } from "../constants/UrlPath";
-import { FIND_ID, FIND_PASSWORD } from "../constants/ApiUrl";
+import { FIND_ACCOUNT_ID_RESULT, FIND_ACCOUNT_PASSWORD_RESULT, LOGIN } from "../../constants/UrlPath";
+import { FIND_ID, FIND_PASSWORD } from "../../constants/ApiUrl";
 
 function FindAccount() {
     const {
