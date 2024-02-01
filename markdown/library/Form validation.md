@@ -1,3 +1,7 @@
+CONTENT
+======
+
+
 # 이전 프로젝트
 
 라이브러리를 사용하지 않고 일일히 form 에 대한 validation 을 작성하였다.
@@ -43,4 +47,40 @@ validate 옵션은 작성한 순서대로 validate 한다.
     })}
     maxLength="8"
 />
+```
+
+## form validation - useFieldArray 사용시
+
+form 에 전달할 객체정보가 단일이 아니라 여러개일때 발생한 문제
+
+### errors message 표시에 대해
+
+현재 프로젝트에서는 여러마리의 반려동물정보를 넘기기 위해 useFieldArray 를 통해 여러 반려동물의 정보입력항목을 추가하고 삭제하였다. 이때 고민한 문제에 대해 정리한다.
+
+#### errors 항목에 대해
+
+```js
+errors {
+    pet:[  // array 형태
+        image: {
+            type: 'required',
+            message: '반려동물의 대표이미지를 선택해주세요',
+            ref: ...
+        },
+        name: {
+            type: 'pattern',
+            message: '10글자 이내 한글만 가능합니다',
+        }
+    ]
+}
+```
+
+주의사항
+
+1. 첫 랜더링시 errors 에는 pet 이 존재하지만, pet 은 빈값이므로 index에 접근할수없다. 따라서 error 메세지를 보내는 컴포넌트는 해당 errors.pet 의 index 로 접근하려하면 에러가 발생한다. 이럴때는 "?." 연산자를 사용한다. index가 존재하는가? 에 대한 판별을 해준다.
+단 index에 대한 "?." 연산자는 다음과 같이 사용한다
+
+```js
+{errors.pet?.[index].name && <small>{errors.pet[index].name.message}</small>}
+{errors.pet?.[index].introduce && <small>{errors.pet[index].introduce.message}</small>}
 ```
