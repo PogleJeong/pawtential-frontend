@@ -3,6 +3,14 @@ import Header from "./Header"
 import Footer from "./Footer"
 import { useCookies } from "react-cookie";
 import { useEffect } from "react";
+import styled from "styled-components";
+
+const Main = styled.div`
+    display: flex;
+    justify-content: center;
+    padding: 0px auto;
+    min-height: 800px;
+`
 
 function Root() {
     const [ cookies, setCookies, removeCookies ] = useCookies();
@@ -14,7 +22,9 @@ function Root() {
     return(
         <>
             <Header />
-            <Outlet />
+            <Main>
+                <Outlet />
+            </Main>
             <Footer />
         </>
     )
