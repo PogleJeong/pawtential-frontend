@@ -17,7 +17,8 @@ function Root() {
     useEffect(()=>{
       // 테스트용 임시 쿠키데이터 설정
       setCookies("id", "test1234", { maxAge: 3600 });
-      setCookies("nickname", "테스트 닉네임", { maxAge: 3600 });  
+      setCookies("nickname", "포텐셜 매니저", { maxAge: 3600 }); 
+      setCookies("auth", "MANAGER", { maxAge: 3600 });
     },[])
     return(
         <>
@@ -25,7 +26,7 @@ function Root() {
             <Main>
                 <Outlet />
             </Main>
-            <Footer />
+            <Footer auth={cookies?.auth} />
         </>
     )
 }
