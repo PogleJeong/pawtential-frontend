@@ -5,7 +5,6 @@ function useScript(src) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    console.log(src);
     let script = document.querySelector(`script[src="${src}"]`);
 
     if (!script) {

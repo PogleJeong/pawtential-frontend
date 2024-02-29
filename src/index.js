@@ -10,24 +10,41 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import reset from './index.css'; // css reset
 
 // inner import
-import reportWebVitals from './reportWebVitals';
+import Root from './common/Root';
 import Main from './common/Root';
-import Login from './router/account/Login';
+import reportWebVitals from './reportWebVitals';
 import NotFound from './error_page/404';
+import Login from './router/account/Login';
 import FindAccount from './router/account/FindAccount';
 import RegisterUser from './router/account/RegisterUser';
 import ChoiceToRegisterPet from './router/account/ChoiceToRegisterPet.';
 import RegisterPet from './router/account/RegisterPet';
 import FindId from './router/account/FindId';
-import Root from './common/Root';
 import ChangePassword from './router/account/ChangePassword';
-import UserInfo from './router/user/UserInfo';
-import MarketHome from './router/market/market-home/MarketHome';
-import MarketFreeList from './router/market/market-home/component/MarketFreeList';
-import MarketSellList from './router/market/market-home/component/MarketSellList';
-import WriteMarketBorder from './router/market/WriteMarketBorder';
-import UpdateMarketBorder from './router/market/UpdateMarketBorder';
-import ViewMarketBorder from './router/market/ViewMarketBorder';
+import UserInfo from './router/user/UserProfile';
+import MarketHome from './router/market/MarketHome';
+import WriteMarketBorder from './router/market/crud/WriteMarketBorder';
+import UpdateMarketBorder from './router/market/crud/UpdateMarketBorder';
+import ViewMarketBorder from './router/market/crud/ViewMarketBorder';
+import Pawtens from './router/pawtens/Pawtens';
+import WritePawtens from './router/pawtens/WritePawtens';
+import WriteContest from './router/contest/WriteContest';
+import ContestHome from './router/contest/ContestHome';
+import Home from './router/Home';
+import ChatMain from './router/chat/ChatMain';
+import PawtensVideo from './router/pawtens/detail/PawtensVideo';
+import PopUp from './router/Pop-up';
+import AdminHome from './router/admin/AdminHome';
+import AdminReportBorder from './router/admin/report/AdminReportBorder';
+import AdminReportResult from './router/admin/report/AdminReportResult';
+import AdminUserStatis from './router/admin/users/AdminUserStatis';
+import AdminUserBorder from './router/admin/users/AdminUserBorder';
+import UpdatePawtens from './router/pawtens/UpdatePawtens';
+import UserProfile from './router/user/UserProfile';
+import UserPetBorder from './router/user/components/UserPetBorder';
+import UserPawtensPostBorder from './router/user/components/UserPawtensPostBorder';
+import UserMarketPostBorder from './router/user/components/UserMarketPostBorder';
+import UserCommentBorder from './router/user/components/UserCommentBorder';
 
 const globalStyle = createGlobalStyle`
   ${reset}
@@ -40,6 +57,10 @@ const router = createBrowserRouter([
     path: "/",
     element: <Root />,
     children: [
+      {
+        path: "",
+        element: <Home />
+      },
       {
         path: "login",
         element: <Login />,
@@ -79,7 +100,27 @@ const router = createBrowserRouter([
       },
       {
         path: "user/:id",
-        element: <UserInfo />,
+        element: <UserProfile />,
+        children: [
+          {
+            path: "pet",
+            element: <UserPetBorder />
+          },
+          {
+            path: "pawtens",
+            element: <UserPawtensPostBorder />,
+          }
+          , 
+          {
+            path: "market",
+            element: <UserMarketPostBorder />,
+          },
+          {
+            path: "comment",
+            element: <UserCommentBorder />,
+          },
+
+        ]
       },
       {
         path: "user/change-password",
@@ -92,33 +133,82 @@ const router = createBrowserRouter([
       {
         path: "market",
         element: <MarketHome />,
-        children: [
-          {
-            path: "free",
-            element: <MarketFreeList />,
-          },
-          {
-            path: "sell",
-            element: <MarketSellList />,
-          }
-        ]
       },
       {
         path: "market/write",
         element: <WriteMarketBorder />,
       },
       {
+        path: "market/:id",
+        element: <ViewMarketBorder />
+      },
+      {
         path: "market/update/:id",
         element: <UpdateMarketBorder />
       },
       {
-        path: "market/detail/:id",
-        element: <ViewMarketBorder />
-      }
+        path: "pawtens",
+        element: <Pawtens />
+      },
+      {
+        path: "pawtens/write",
+        element: <WritePawtens />
+      },
+      {
+        path: "pawtens/update",
+        element: <UpdatePawtens />
+      },
+      {
+        path: "pawtens/:id",
+        element: <PawtensVideo />
+      },
+      {
+        path: "contest",
+        element: <ContestHome />
+      },
+      {
+        path: "contest/write",
+        element: <WriteContest />
+      },
+      {
+        path: "chat",
+        element: <ChatMain />
+      },
+      {
+        path: "chat/:id",
+        element: <ChatMain />
+      },
+      
     ],
     errorElement: <NotFound />,
   },
-
+  // 팝업의 경우 header, footer 필요없음.
+  {
+    path: "pop-up",
+    element: <PopUp />
+  },
+  {
+    path: "admin",
+    element: <AdminHome />,
+    children: [
+      {
+        path: "user/manage",
+        element: <AdminUserBorder />
+      },
+      {
+        path: "user/statis",
+        element: <AdminUserStatis />
+      },
+      {
+        path: "report/manage",
+        element: <AdminReportBorder />
+      },
+      {
+        path: "report/result",
+        element: <AdminReportResult />
+      },
+    ]
+  }
 
 ])
 

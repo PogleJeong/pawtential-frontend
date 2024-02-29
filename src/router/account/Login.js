@@ -1,13 +1,12 @@
+import axios, { HttpStatusCode } from "axios";
+import { useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import axios, { HttpStatusCode } from "axios";
-import { useCookies } from "react-cookie";
-import { Breadcrumb, Button, Col, Form, Row } from "react-bootstrap";
+import styled from "styled-components";
 
 import { LOGIN_BY_KAKAO, LOGIN_BY_NAVER } from "../../constants/ApiUrl";
 import { FIND_ACCOUNT, HOME, LOGIN, REGISTER } from "../../constants/UrlPath";
-import { useEffect, useState } from "react";
-import styled from "styled-components";
 
 const Container = styled.div`
     padding: 5% 10%;
@@ -17,6 +16,7 @@ const Container = styled.div`
 const LoginBox = styled.div`
     display: grid;
     grid-template-columns: 2fr 1fr;
+    width: 800px;
     border: none;
     border-radius: 10px;
     box-shadow: 8px 8px 8px rgba(0,0,0,0.1);
@@ -37,17 +37,17 @@ const Image = styled.img`
 const FormBox = styled.div`
     padding: 20px 20px;
     height: 100%;
-
     h2 {
         font-size: 2em;
         font-weight: bold;
         text-align: center;
         padding: 20px;
         margin-bottom: 30px;
-    };
-    div {
-        position: relative !important;
-    };
+    }
+`
+
+const FormGroup = styled.div`
+    position: relative !important;
     label {
         position:absolute;
         z-index: 1;
@@ -57,26 +57,41 @@ const FormBox = styled.div`
         font-size: 0.8rem;
         left: 10px;
         transition: .2s linear;
-    };
-
-    .change_label {
-        background-color:#fcfcfc;
-        transition: .2s linear;
-        transform: scale(0.9);
-        top: -5px !important;
-        left: 5px !important;
+        &.change_label {
+            background-color:#fcfcfc;
+            transition: .2s linear;
+            transform: scale(0.9);
+            top: -5px !important;
+            left: 5px !important;
+        }
     }
-
     input {
         width: 100%;
         height: 30px;
+        border: 1px solid gray;
+        border-radius: 5px;
         font-size: 0.8rem;
         padding-left: 5px;
         margin-bottom:20px;
         background: transparent !important;
+        &:focus {
+            border: 2px solid blue;
+        }
     }
-
-
+    button {
+        width: 100%;
+        height: 35px;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: white;
+        font-size: 0.8rem;
+        font-weight: bold;
+        transition: background-color 500ms;
+        &:hover {
+            background-color: #009cff;
+        }
+    }
 `
 
 const AccountOptionBox = styled.div`
@@ -98,7 +113,7 @@ const SnsLoginBox = styled.div`
         border: none;
         border-radius: 5px;
         width: 100%;
-        height: 45px;
+        height: 35px;
         margin-bottom: 15px;
         color: white;
         font-size: 1rem;
@@ -182,13 +197,13 @@ function Login() {
 
     const loginByKakao = async() => {
         await axios.get(LOGIN_BY_KAKAO, {
-            baseURL: process.env.REACT_SERVER_URL
+            baseURL: process.env.REACT_APP_SERVER_URL
         })
     }
 
     const loginByNaver = async() => {
         await axios.get(LOGIN_BY_NAVER, {
-            baseURL: process.env.REACT_SERVER_URL
+            baseURL: process.env.REACT_APP_SERVER_URL
         })
     }
   
@@ -200,9 +215,9 @@ function Login() {
                     <Image src={loginImage[Math.floor(Math.random()*3)]}/>
                 </div>
                 <FormBox>
-                    <Form onSubmit={handleSubmit(submitLogin)}>
+                    <form onSubmit={handleSubmit(submitLogin)}>
                         <h2>LOGIN</h2>
-                        <div>
+                        <FormGroup>
                             <label htmlFor="login__id">ID</label>
                             <input id="login__id" 
                                 {...register("id", {
@@ -215,9 +230,9 @@ function Login() {
                                 onFocus={labelUp}
                                 onBlur={labelDown}
                             />
-                            <Form.Text className="text-muted">{errors.id?.message}</Form.Text>
-                        </div>
-                        <div>
+                            <small className="text-muted">{errors.id?.message}</small>
+                        </FormGroup>
+                        <FormGroup>
                             <label htmlFor="login__password">PASSWORD</label>
                             <input id="login__password" 
                                 {...register("password", {
@@ -231,10 +246,12 @@ function Login() {
                                 onBlur={labelDown}
                                 type="password"
                             />
-                            <Form.Text className="text-muted">{errors.password?.message}</Form.Text>
-                        </div>
-                        <Button style={{width: "100%", height: "45px"}} variant="primary">Login</Button>
-                    </Form>
+                            <small className="text-muted">{errors.password?.message}</small>
+                        </FormGroup>
+                        <FormGroup>
+                            <button>Login</button>
+                        </FormGroup>
+                    </form>
                     <hr />
                     <AccountOptionBox>
                         <ul>

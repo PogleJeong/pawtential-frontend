@@ -1,9 +1,9 @@
 import axios, { HttpStatusCode } from "axios";
 import { useRef, useState } from "react";
-import { Form, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
 import { CHECK_EMAIL, CHECK_ID } from "../../constants/ApiUrl";
-import { PET_ADD, REGISTER } from "../../constants/UrlPath";
+import { CHOICE_REGISTER_PET, REGISTER } from "../../constants/UrlPath";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -48,16 +48,21 @@ const FormGroup = styled.div`
         border-radius: 5px;
         box-sizing: border-box;
     }
-    #regi__profile {
-        display: none;
-    }
 
     small {
+        display: block;
         font-size: 0.5em;
+        color: red;
+        margin-top: 3px;
     }
 
     select {
-        width: 75px;
+        width: 80px;
+        height: 40px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+        text-align: center;
     }
 
     button {
@@ -66,10 +71,18 @@ const FormGroup = styled.div`
         margin-left: 10px;
         border: none;
         border-radius: 5px;
-        transition: background-color 500ms;
-        &:hover {
-            background-color: aliceblue;
-            
+        &.checked {
+            color: white;
+            background-color: #3498db;
+            transition: background-color 500ms;
+            &:hover {
+                
+                background-color: blue;        
+            }
+        }
+        &.unchecked {
+            color: white;
+            background-color: brown;
         }
     }
 `
@@ -81,16 +94,16 @@ const FormBtnGroup = styled.div`
     width: 100%;
     padding: 30px;
     button {
-        transition: background-color 500ms;
-        width: 80px;
+        width: 100px;
         height: 40px;
         margin-left: 10px;
         border: none;
         border-radius: 5px;
+        color: white;
+        background-color: #3498db;
         transition: background-color 500ms;
         &:hover {
-            background-color: aliceblue;
-            
+            background-color: blue;
         }
     }
 `
@@ -106,43 +119,93 @@ function RegisterUser() {
         handleSubmit,
         formState: { errors },
         getValues, // 현재 register 에 등록된 input value 값 가져오기
+        setValue,
     } = useForm({
-        mode: "onSubmit"
+        defaultValues: {
+            profile: null,
+            id: "",
+            password: "",
+            passwordDuplication: "",
+            username: "",
+            nickname: "",
+            email: "",
+            birth: "",
+            sex: "male",
+        },
+        mode: "onBlur"
     });
 
+    // 이미지 업로드 시 미리보기
     const regiUserImage = (event) => {
         let fileUrl = event.target.files[0];
-
         if (fileUrl) {
             const imageURL = URL.createObjectURL(fileUrl);
             setImageFakeUrl(imageURL);
         } 
     }
 
-    const checkEmail = async(formData) => { // data 는 register 값이 들어감
-        console.log(formData);
-        // 서버쪽 고치기 - 비즈니스로직상 중복아이디나 중복이메일이 있어도 정상이므로 200을 받아야함.
-        const { status } = await axios.get(CHECK_EMAIL);
-        if (status === HttpStatusCode.NoContent) {
-            // email 중복처리 완료되면 disabled
-            setIsCheckId(()=>true);
-            checkInputRef.current.email.disabled = true;
-        } else {
-            setIsCheckId(()=>false);
-            alert("이미 존재하는 아이디입니다.");
-        }
+    // 아이디 중복 확인
+    const checkId = async() => {
+        console.log(getValues("id"));
+        await axios.get(CHECK_EMAIL, {
+            params: {
+                email : getValues("id"),
+            },
+            baseURL: process.env.REACT_APP_SERVER_URL,
+        }).then((response)=> {
+            const { status } = response;
+            if (status === HttpStatusCode.Ok) {
+                const { data } = response;
+                if (data) {
+                    // email 중복처리 완료되면 disabled
+                    setIsCheckId(true);
+                    checkInputRef.current.id.disabled = true;
+                } else {
+                    setIsCheckId(false);
+                    alert("이미 존재하는 이메일입니다.");
+                }
+            } 
+        }).catch((error)=>{
+            console.log("네트워크 연결이 필요합니다.");
+        })
     }
 
-    const checkId = async(formData) => {
-        console.log(formData);
-        const { status } = await axios.get(CHECK_ID);
-        if (status === HttpStatusCode.NoContent) {
-            setIsCheckEmail(()=>true);
-            checkInputRef.current.id.disabled = true;
-        } else {
-            setIsCheckEmail(()=>false);
-            alert("이미 존재하는 이메일입니다.");
-        }
+    // 이메일 중복 확인
+    const checkEmail = async() => { 
+        console.log(getValues("email"));
+        await axios.get(CHECK_EMAIL, {
+            params: {
+                email : getValues("email"),
+            },
+            baseURL: process.env.REACT_APP_SERVER_URL,
+        }).then((response)=> {
+            const { status } = response;
+            if (status === HttpStatusCode.Ok) {
+                const { data } = response;
+                if (data) {
+                    // email 중복처리 완료되면 disabled
+                    setIsCheckEmail(true);
+                    checkInputRef.current.email.disabled = true;
+                } else {
+                    setIsCheckEmail(false);
+                    alert("이미 존재하는 이메일입니다.");
+                }
+            } 
+        }).catch((error)=>{
+            console.log("네트워크 연결이 필요합니다.");
+        })
+    }
+
+    // 아이디 변경
+    const uncheckId = () => {
+        setValue("id", "");
+        setIsCheckId(false);
+    }
+
+    // 이메일 변경
+    const uncheckEmail = () => {
+        setValue("email", "")
+        setIsCheckEmail(false);
     }
 
     const submitForm = async(formData) => {
@@ -150,14 +213,22 @@ function RegisterUser() {
         await axios.post(REGISTER, formData, {
             baseURL: process.env.REACT_APP_SERVER_URL
         }).then(response => {
-            if (response.data) {
-                navigator(PET_ADD);
+            const { status } = response;
+            if (status === HttpStatusCode.Created) {
+                alert("회원가입에 성공하였습니다.");
+                navigator(CHOICE_REGISTER_PET, { 
+                    state: formData.id,
+                });
             } else {
                 alert("회원가입에 실패하였습니다.");
             }
         }).catch((error)=>{
             alert("회원가입에 실패하였습니다.");
         })
+
+        navigator(CHOICE_REGISTER_PET, { 
+            state: formData.id,
+        });
     };
 
     return(
@@ -165,17 +236,18 @@ function RegisterUser() {
             <h2>회원가입</h2>   
             <form onSubmit={handleSubmit(submitForm)}>
                 <FormGroup>
-                    <label>Profile</label>
+                    <label>프로필사진</label>
                     <img src={imageFakeUrl} />
                     <label htmlFor="regi__profile" style={{cursor: "pointer"}}>프로필 선택</label>
                     <input type="file" id="regi__profile" 
                         {...register("profile")}
-                        onChange={regiUserImage} 
+                        onChange={regiUserImage}
+                        text="프로필선택"
                     />
                     <small>설정하지 않으면 기본이미지가 설정됩니다.</small>
                 </FormGroup>
                 <FormGroup> 
-                    <label htmlFor="regi__id">ID</label>
+                    <label htmlFor="regi__id">아이디</label>
                     <input id="regi__id"
                         ref={(element)=> checkInputRef.current.id = element}
                         {...register("id", {
@@ -185,12 +257,17 @@ function RegisterUser() {
                                 check: () => isCheckId || "ID 중복을 확인해주세요"
                             }
                         })}
+                        disabled={isCheckId}
                     />
-                    <button type="button" onClick={checkId}>중복확인</button>
+                    {isCheckId ? 
+                    <button className="unchecked" type="button" onClick={uncheckId}>변경</button>
+                    :
+                    <button className="checked" type="button" onClick={checkId}>중복확인</button>
+                    }
                     {errors?.id && <small>{errors.id.message}</small>}
                 </FormGroup>
                 <FormGroup>
-                    <label htmlFor="regi__password">PASSWORD</label>
+                    <label htmlFor="regi__password">비밀번호</label>
                     <input id="regi_password"
                         {...register("password", {
                             required: "PASSWORD 를 입력해주세요",
@@ -212,9 +289,8 @@ function RegisterUser() {
                     {errors?.password && <small>{errors?.password.message}</small>}
                 </FormGroup>
                 <FormGroup>
-                    <label htmlFor="regi__confirm">CONFIRM PASSWORD</label>
+                    <label htmlFor="regi__confirm">비밀번호 재확인</label>
                     <input id="regi__confirm"
-                        placeholder="비밀번호를 다시 입력해주세요"
                         {...register("passwordDuplication", {
                             required: "비밀번호를 확인해주세요.",
                             validate: {
@@ -226,7 +302,7 @@ function RegisterUser() {
                     {errors?.passwordDuplication && <small>{errors?.passwordDuplication.message}</small>}
                 </FormGroup>
                 <FormGroup>
-                    <label htmlFor="regi__email">EMAIL</label>
+                    <label htmlFor="regi__email">이메일</label>
                     <input id="regi__email"
                         type="email"
                         ref={(element)=> checkInputRef.current.email = element}
@@ -240,12 +316,17 @@ function RegisterUser() {
                                 check: () => isCheckEmail || "이메일 중복을 확인해주세요."
                             }
                         })}
+                        disabled={isCheckEmail}
                     />
-                    <button type="button" onClick={checkEmail}>중복확인</button>
+                    {isCheckEmail ?
+                    <button className="unchecked" type="button" onClick={uncheckEmail}>변경</button>
+                    :
+                    <button className="checked" type="button" onClick={checkEmail}>중복확인</button>
+                    }
                     {errors?.email && <small>{errors?.email.message}</small>}
                 </FormGroup>
                 <FormGroup>
-                    <label htmlFor="regi__name">USER NAME</label>
+                    <label htmlFor="regi__name">이름</label>
                     <input id="regi__name"
                         {...register("username", {
                             required: "이름을 입력해주세요",
@@ -267,7 +348,7 @@ function RegisterUser() {
                     {errors?.username && <small>{errors?.username.message}</small>}
                 </FormGroup>
                 <FormGroup>
-                    <label htmlFor="regi__nick">NICK NAME</label>
+                    <label htmlFor="regi__nick">닉네임</label>
                     <input id="regi__nick"
                         {...register("nickname", {
                             required: "닉네임을 입력해주세요",
@@ -289,7 +370,7 @@ function RegisterUser() {
                     {errors?.nickname && <small>{errors?.nickname?.message}</small>}
                 </FormGroup>
                 <FormGroup>
-                    <label htmlFor="regi__birth">BIRTH</label>
+                    <label htmlFor="regi__birth">생년월일</label>
                     <input id="regi__birth"
                         
                         {...register("birth", {
@@ -316,7 +397,7 @@ function RegisterUser() {
                     {errors?.birth && <small>{errors?.birth?.message}</small>}
                 </FormGroup>
                 <FormGroup>
-                    <label htmlFor="regi__sex">SEX</label>
+                    <label htmlFor="regi__sex">성별</label>
                     <select id="regi__sex"
                          {...register("sex", {
                             required: "성별을 선택해주세요."
