@@ -6,36 +6,8 @@ import styled from "styled-components";
 import { MARKET } from "../../constants/UrlPath";
 import MarketSideBar from "./border/MarketSideBar";
 import MarketBorder from "./border/MarketBorder";
+import { testMarketListData } from "../../test-data/market-data";
 
-const testMarketData = [
-    {
-        id: 1,
-        title: "테스트 제목1",
-        writer: "test1",
-        writer_nick: "작성자 닉네임1",
-        state: "나눔",
-        wdate: new Date(),
-        posting: 5,
-    },
-    {
-        id: 2,
-        title: "테스트 제목2",
-        writer: "test2",
-        writer_nick: "작성자 닉네임2",
-        state: "나눔",
-        wdate: new Date(),
-        posting: 1,
-    },
-    {
-        id: 3,
-        title: "테스트 제목3",
-        writer: "test3",
-        writer_nick: "작성자 닉네임3",
-        state: "판매",
-        wdate: new Date(),
-        posting: 2,
-    }
-];
 
 const Container = styled.div`
     display: flex;
@@ -61,8 +33,8 @@ const MarketBox = styled.div`
  */
 function MarketHome() {
     const [ searchParams ] = useSearchParams();
-    const [ marketPreviewList, setMarketPreviewList ] = useState(testMarketData);
-    const [ viewCount, setViewCount ] = useState(15); // 기본 15개 볼 수 있음.
+    const [ marketPreviewList, setMarketPreviewList ] = useState(testMarketListData);
+    const [ viewCount, setViewCount ] = useState(20); // 기본 20개 볼 수 있음.
     
     useEffect(()=>{
        getMarketData();
@@ -72,19 +44,19 @@ function MarketHome() {
         
         const queryParams = addQueryParams();
 
-        // await axios.get(`MARKET?${queryParams}`, {   
-        //     baseURL: process.env.REACT_APP_SERVER_URL,
-        // }).then((response)=>{
-        //     const { status } = response;
-        //     if (status === HttpStatusCode.Ok) {
-        //         const { data } = response;
-        //         setMarketPreviewList(data);
-        //     } else {
-        //         alert("데이터를 가져오지 못했습니다.");
-        //     }
-        // }).catch((error)=>{
-        //     alert("데이터를 가져오지 못했습니다.");
-        // });
+        await axios.get(`MARKET?${queryParams}`, {   
+            baseURL: process.env.REACT_APP_SERVER_URL,
+        }).then((response)=>{
+            const { status } = response;
+            if (status === HttpStatusCode.Ok) {
+                const { data } = response;
+                setMarketPreviewList(data);
+            } else {
+                alert("데이터를 가져오지 못했습니다.");
+            }
+        }).catch((error)=>{
+            console.log("네트워크 연결이 필요합니다.");
+        });
     }
 
     const addQueryParams = () => {
@@ -92,7 +64,6 @@ function MarketHome() {
         const type = searchParams.get("type");
         const keyword = searchParams.get("keyword");
         const page = searchParams.get("page");
-        const viewCount = searchParams.get("viewCount");
 
         const queryParams = [];
 
@@ -132,15 +103,7 @@ function MarketHome() {
             <MarketBox>
                 <MarketSideBar filter={searchParams.get("filter") || "all"} />
                 <MarketBorder marketPreviewList={marketPreviewList} page={searchParams.get("page")} viewCount={viewCount} setViewCount={setViewCount}/>
-                <div>
-                {/* {printAllMarket !== null? 
-                <MarketList />
-                :
-                <Outlet />
-                } */}
-                </div>
             </MarketBox>
-           
         </Container>
     );
 };

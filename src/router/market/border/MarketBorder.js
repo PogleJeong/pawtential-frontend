@@ -1,14 +1,15 @@
-import { useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 import Pagination from "./components/Pagination";
 import { dateFormat } from "../../../util/UtilFunction";
+import { MARKET, MARKET_WRITE, USER_INFO } from "../../../constants/UrlPath";
+import { useCookies } from "react-cookie";
 
 const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: start  ;
     padding: 10% 5%;
     padding: 100px 30px;
     border-left: 1px solid rgba(0,0,0,0.1);
@@ -19,9 +20,21 @@ const Wrapper = styled.div`
 `
 const ViewCountBox = styled.div`
     display: flex;
-    justify-content: right;
+    align-items: center;
+    justify-content: space-between;
     padding: 10px;
-
+    button {
+        height: 30px;
+        padding: 10px;
+        font-size: 0.8rem;
+        border: none;
+        color: white;
+        background-color:  #3498db;
+        transition: background-color 1s;
+        &:hover {
+            background-color: black;
+        }
+    }
     span {
         display: inline-block;
         margin-right: 10px;
@@ -33,65 +46,74 @@ const Border = styled.div`
     width: 100%;
 `
 
-const Paging = styled.div`
-   
-`
 function MarketBorder({marketPreviewList, page, viewCount, setViewCount}) {
-
-    const changeBorderCount = (element) => {
-        const selectViewCount = element.target.value;
+    const [ cookies ] = useCookies(["id"]);
+    const navigator = useNavigate();
+    // 보는 게시물 수 달라지면 다시 검색.
+    const changeBorderCount = (event) => {
+        const selectViewCount = event.target.value;
         setViewCount(selectViewCount);
+    }
+
+    const writeMarketBorder = () => {
+        navigator(MARKET_WRITE);
     }
 
     return(
         <Wrapper>
             <ViewCountBox>
-                <span>표시 게시물 개수</span>
-                <select onChange={changeBorderCount} >
-                    <option value="15">15개</option>
-                    <option value="20">20개</option>
-                    <option value="25">25개</option>
-                    <option value="30">30개</option>
-                </select>
+                {cookies?.id && 
+                <div>
+                    <button onClick={writeMarketBorder}>게시물 작성하기</button>
+                </div>}
+                <div>
+                    <span>표시개수</span>
+                    <select onChange={changeBorderCount} >
+                        <option value="20">20개</option>
+                        <option value="40">40개</option>
+                        <option value="60">60개</option>
+                        <option value="80">80개</option>
+                    </select>
+                </div>
             </ViewCountBox>
             <Border>
-            <table size="sm">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>작성자</th>
-                        <th>제목</th>
-                        <th>분류</th>
-                        <th>작성날짜</th>
-                        <th>포스팅</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {marketPreviewList.map(({id, writer, writer_nick, title, state, wdate, posting},index)  => (
-                    <tr id={index}>
-                        <td>{id}</td>
-                        <td>
-                            <Link to={`/user/${writer}`}>
-                                {writer_nick}
-                            </Link>
-                        </td>
-                        <td><Link to={`/market/detail/${id}`}>{title}</Link></td>
-                        <td>{state}</td>
-                        <td>{dateFormat(wdate)}</td>
-                        <td>{posting}</td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
+                <table size="sm">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>작성자</th>
+                            <th>제목</th>
+                            <th>분류</th>
+                            <th>작성날짜</th>
+                            <th>포스팅</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {marketPreviewList.map(({id, writer, writer_nick, title, state, wdate, posting},index)  => (
+                        <tr id={index}>
+                            <td>{id}</td>
+                            <td>
+                                <Link to={`${USER_INFO}/${writer}`}>
+                                    {writer_nick}
+                                </Link>
+                            </td>
+                            <td><Link to={`${MARKET}/${id}`}>{title}</Link></td>
+                            <td>{state}</td>
+                            <td>{dateFormat(wdate)}</td>
+                            <td>{posting}</td>
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
             </Border>
-            <Paging>
+            <div>
               <Pagination
                 totalItems={marketPreviewList.length}
                 currentPage={page && parseInt(page) > 0 ? parseInt(page) : 1}
                 pageCount={5}
                 itemCountPerPage={viewCount}>
               </Pagination>
-            </Paging>
+            </div>
         </Wrapper>
     )
 }
