@@ -9,7 +9,7 @@ function PreviewVideo({showModal, setShowModal, previewData}) {
             copy.video = false;
             return copy;
         })
-    }
+    };
 
     return(
         <Modal show={showModal.video} onHide={handleClose}>

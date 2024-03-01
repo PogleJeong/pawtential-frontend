@@ -3,10 +3,14 @@ import { useForm } from "react-hook-form";
 import { Button } from "react-bootstrap";
 import axios, { HttpStatusCode } from "axios";
 import { WRITE_PAWTENS } from "../../constants/UrlPath";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import PreviewThumbnail from "./modal/PreviewThumbnail";
 import PreviewVideo from "./modal/PreviewVideo";
 import styled from "styled-components";
+
+import { useLocation, useNavigate } from "react-router-dom";
+import { PAWTENS } from "../../constants/UrlPath";
+import { getValue } from "@testing-library/user-event/dist/utils";
 
 const Container = styled.div`
     margin: 50px 0px;
@@ -58,28 +62,48 @@ const FormGroup = styled.div`
     }
 `
 
-function WritePawtens() {
-    const [ cookies ] = useCookies(["id", "nickname"]);
+const BtnBox = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80px;
+`
+
+function UpdatePawtens() {
+    const [ cookies ] = useCookies(["id"]);
+    const { state } = useLocation(); // view 에서 수정되야함.
+    const navigator = useNavigate();
     const {
         register,
         handleSubmit,
         formState: { errors }
     } = useForm({
         defaultValues: {
-            writer: `${cookies?.id}`,
-            title: "",
-            content: "",
-            thumbnail: null,
-            video: null,
+            writer: state?.writer,
+            title: state?.title,
+            content: state?.content,
+            thumbnail: state?.thumbnail,
+            video: state?.video,
         },
         mode: "onSubmit"
     });
+    
+    useEffect(()=>{
+        console.log(state);
+        // 작성자가 아니라면 수정불가
+        const isWriter = cookies?.id === state.writer;
+        if (!isWriter) {
+            alert("해당 포텐셜을 수정할 권한이 없습니다.");
+            navigator(PAWTENS + `/${state?.id}`)
+            return;
+        } 
+    },[])
 
     // 썸네일, 포텐셜비디오
     const [ previewData, setpreviewData ] = useState({thumbnail: "", video: ""});
     const [ showModal, setShowModal ] = useState({thumbnail: false, video: false});
 
-    const writePawtens = async(data) => {
+    const updatePawtens = async(data) => {
         console.log(data);
         await axios.post(WRITE_PAWTENS, data, {
             baseURL: process.env.REACT_APP_SERVER_URL,
@@ -132,8 +156,8 @@ function WritePawtens() {
 
     return(
         <Container>
-            <h2>포텐스 영상 등록하기</h2>
-            <Form onSubmit={handleSubmit(writePawtens)}>
+            <h2>포텐스 영상 수정하기</h2>
+            <Form onSubmit={handleSubmit(updatePawtens)}>
                 <FormGroup className="mb-3">
                     <label>작성자</label>
                     <input type="text" 
@@ -141,6 +165,7 @@ function WritePawtens() {
                         {...register("writer", {
                             required: "로그인 정보가 없습니다.",
                         })}
+                        
                     />
                     {errors?.writer && 
                     <small>
@@ -213,13 +238,14 @@ function WritePawtens() {
                     </small>
                     }
                 </FormGroup>
-                <Button type="submit">제출</Button>
-                
+                <BtnBox>
+                    <Button type="submit">제출</Button>
+                </BtnBox>
             </Form>
             <PreviewThumbnail showModal={showModal} setShowModal={setShowModal} previewData={previewData} />
             <PreviewVideo showModal={showModal} setShowModal={setShowModal} previewData={previewData} />
         </Container>
-    );
+    )
 };
 
-export default WritePawtens;
+export default UpdatePawtens;
