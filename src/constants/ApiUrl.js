@@ -27,6 +27,9 @@ export const ADD_PAWTENS_LIKE = "/pawtens/add/like";
 export const CANCEL_PAWTENS_LIKE = "/pawtens/cancel/like";
 
 // market
+export const GET_MARKET = "/pawtens/"
+export const REMOVE_MARKET = "/pawtens/remove/"
+export const UPDATE_MARKET = "/pawtens/update/";
 
 // contest
 export const GET_CONTEST_LIST = "/contest";
