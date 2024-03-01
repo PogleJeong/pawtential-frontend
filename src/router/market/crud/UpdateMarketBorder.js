@@ -164,10 +164,8 @@ function UpdateMarketBorder() {
         }).then((response)=>{
             const { status } = response;
             if (status === HttpStatusCode.Ok) {
-                const { data } = response;
-                console.log(data);
                 alert("게시물이 성공적으로 수정되었습니다.");
-                navigator(`${MARKET}/${data}`);
+                navigator(`${MARKET}/${id}`);
             } else {
                 alert("게시물 수정에 실패하였습니다.");
                 navigator(MARKET);
