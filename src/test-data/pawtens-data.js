@@ -1,0 +1,38 @@
+export const testPawtensData = [
+    {
+        pawtens_id: "dd38dje-393jdnw-375smak0-18283aa",
+        title: "테스트 포텐스 제목1",
+        content: "테스트 포텐스 내용1",
+        writer: "test9987",
+        nickname: "테스트 닉네임97",
+        like: 9,
+        view: 8,
+        date_created: new Date(),
+        date_updated: new Date(),
+        thumbnail: process.env.PUBLIC_URL + "/images/homeslide1.jpg",
+    },
+    {
+        pawtens_id: "2983dje-393jdnw-375smak0-18283aa",
+        title: "테스트 포텐스 제목2",
+        content: "테스트 포텐스 내용3",
+        writer: "test3397",
+        nickname: "테스트 닉네임32",
+        like: 9,
+        view: 18,
+        date_created: new Date(),
+        date_updated: new Date(),
+        thumbnail: process.env.PUBLIC_URL + "/images/homeslide2.jpg",
+    },
+    {
+        pawtens_id: "2983dje-393jdnw-375smak0-92283aa",
+        title: "테스트 포텐스 제목2",
+        content: "테스트 포텐스 내용3",
+        writer: "test3397",
+        nickname: "테스트 닉네임32",
+        like: 9,
+        view: 15,
+        date_created: new Date(),
+        date_updated: new Date(),
+        thumbnail: process.env.PUBLIC_URL + "/images/homeslide3.jpg",
+    }
+];
