@@ -1,6 +1,6 @@
 import { Link, Outlet } from "react-router-dom";
 import styled, { keyframes } from "styled-components";
-import { ADMIN, ADMIN_REPORT_MANAGE, ADMIN_REPORT_RESULT, ADMIN_USER_MANAGE, ADMIN_USER_STATIS, HOME } from "../../constants/UrlPath";
+import { ADMIN, ADMIN_REPORT_MANAGE, ADMIN_REPORT_RESULT, ADMIN_USER_MANAGE, ADMIN_USER_STATIS, HOME, MARKET, PAWTENS } from "../../constants/UrlPath";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 
@@ -21,9 +21,9 @@ const Container = styled.div`
     .panel__container {
         width: 90vw;
         max-width: 2000px;
-        height: 95vh;
-        max-height: 1000px;
-        margin-top: 20px;
+        min-height: 1000px;
+        max-height: 1500px;
+        margin:20px auto;
         box-shadow: 2px 3px 6px 1px;
         .panel__header {
             width: 100%;
@@ -42,11 +42,10 @@ const Container = styled.div`
         }
         .panel__body {
             display: grid;
-            grid-template-columns: 1fr 4fr;
+            grid-template-columns: 1fr 6fr;
+            min-height: 900px;
             
             .panel__sidebar {
-                /* display: flex;
-                flex-direction: column; */
                 height: 100%;
                 padding: 100px 10px;
                 box-shadow: 2px 2px 2px 0px;
@@ -62,21 +61,38 @@ const Container = styled.div`
                     }
                 }
                 .panel__sublist {
-                    border: 1px solid black;
+                    background-color: #fff;
+                    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+                    border-radius: 4px;
                     transform-origin: top;
                     animation: ${sublistAnimation} 0.3s;
                 }
             }
-            .panel__main {
+        }
+    }
+`
 
+const NavigationBox = styled.div`
+    h2 {
+        padding: 10px;
+        text-align: center;
+        font-weight: bold;
+        background-color: #999;
+    }
+    ul {
+        li {
+            padding: 10px;
+            a:hover {
+                color: aqua;
             }
         }
     }
 `
 
 const activeStyle = {
-    backgroundColor: "aliceblue",
-    border: "1px solid black"
+    backgroundColor: "#87ceeb",
+    border: "none",
+    color: "#fff"
 }
 
 const PANEL = {
@@ -130,7 +146,7 @@ function AdminHome() {
                             {partChoice === PANEL.USER &&
                                 <div className="panel__sublist">
                                     <ul>
-                                        <li className="panel__list"><Link to={ADMIN_USER_MANAGE} >유저관리</Link></li>
+                                        <li className="panel__list"><Link to={ADMIN_USER_MANAGE} >계정관리</Link></li>
                                         <li className="panel__list"><Link to={ADMIN_USER_STATIS} >유저통계</Link></li>
                                     </ul>
                                 </div>
@@ -151,6 +167,15 @@ function AdminHome() {
                                 </div>
                                 }
                         </ul>
+                        <hr/>
+                        <NavigationBox>
+                            <h2>페이지 이동</h2>
+                            <ul>
+                                <li><Link to={HOME}>홈</Link></li>
+                                <li><Link to={MARKET}>마켓플레이스</Link></li>
+                                <li><Link to={PAWTENS}>포텐셜</Link></li>
+                            </ul>
+                        </NavigationBox>
                     </div>
                     <div className="panel__main">
                         {/* 패널에 따른 컴포넌트 */}
